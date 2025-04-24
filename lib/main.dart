@@ -72,22 +72,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _addNote() {
     setState(() {
-      final newNote = Note(title: 'New Note', content: '');
+      final newNote = Note(title: 'Untitled Note', content: '');
       _notes.add(newNote);
-      // _selectedNote = newNote; // Select the new note
-      // _updateControllers();
       _selectNote(newNote);
-      _saveNotes();
-    });
-  }
-
-  void _updateNote() {
-    if (_selectedNote == null) return;
-
-    setState(() {
-      _selectedNote!.title = _noteTitleController.text;
-      _selectedNote!.content = _noteContentController.text;
-      _selectedNote!.lastEdited = DateTime.now(); //update lastEdited
       _saveNotes();
     });
   }
@@ -116,9 +103,9 @@ class _MyHomePageState extends State<MyHomePage> {
         _selectedNote = note;
         _updateControllers();
       });
-      if (_scaffoldKey.currentState != null) { // Check if state is not null
-      _scaffoldKey.currentState!.closeDrawer(); // Close the drawer
-    }
+      if (_scaffoldKey.currentState != null) { 
+        _scaffoldKey.currentState!.closeDrawer(); 
+      }
     }
 
     void _updateControllers() {
@@ -132,7 +119,6 @@ class _MyHomePageState extends State<MyHomePage> {
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        // title: Text(_selectedNote?.title ?? 'Notes', style: TextStyle(color: Colors.white)),
         title: Column(
           children: [
             if (_selectedNote?.isTitleAiGenerated == false) ...[
@@ -144,6 +130,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         iconTheme: IconThemeData(color: Colors.white),
+        actions: [ 
+          IconButton(
+            icon: const Icon(Icons.refresh), 
+            onPressed: () {},
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -207,6 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onChanged: (text) {
                     if (_selectedNote != null) {
                       _selectedNote!.content = text;
+                      _selectedNote!.lastEdited = DateTime.now();
                       _saveNotes(); // Save on every content change
                     }
                   },
