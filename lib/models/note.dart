@@ -1,11 +1,12 @@
 class Note {
   String title;
   String content;
+  bool titleGenerationInProgress;
   bool isTitleAiGenerated;
   DateTime lastEdited;
 
   Note({required this.title, required this.content}) : 
-    lastEdited = DateTime.now(), isTitleAiGenerated = false;
+    lastEdited = DateTime.now(), isTitleAiGenerated = false, titleGenerationInProgress = false;
 
   void updateContent(String newContent) {
     content = newContent;

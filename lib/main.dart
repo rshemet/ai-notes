@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'models/note.dart';
+// import 'services/inference.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -108,6 +109,46 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
+    void _generateTitle(Note note) {
+      // return;
+      note.titleGenerationInProgress = true;
+      // LLMModel.create();
+      //   .then((model) => {
+      //   model.summarize(
+      //     note.content, 
+      //     (String partialTitle) => {
+      //       setState(() {
+      //         note.updateTitle(partialTitle);
+      //         note.isTitleAiGenerated = true;
+      //         _noteTitleController.text = partialTitle;
+      //       })
+      //     },
+      //     (String generatedTitle) => {
+      //       setState(() {
+      //         note.updateTitle(generatedTitle);
+      //         note.isTitleAiGenerated = true;
+      //         _noteTitleController.text = generatedTitle;
+      //         print('Title updated to: $generatedTitle');
+      //         _saveNotes();
+      //         note.titleGenerationInProgress = false;
+      //       })
+      //     }
+      //   )
+      // });
+    }
+
+    void _updateNote(String text) {
+      if (_selectedNote != null) {
+        _selectedNote!.updateContent(text);
+        _selectedNote!.lastEdited = DateTime.now();
+        _saveNotes(); 
+        if (_selectedNote!.isTitleAiGenerated == false && text.length > 50) {
+          print('Generating title...');
+          _generateTitle(_selectedNote!);
+        }
+      }
+    }
+
     void _updateControllers() {
       _noteTitleController.text = _selectedNote?.title ?? '';
       _noteContentController.text = _selectedNote?.content ?? '';
@@ -131,9 +172,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         iconTheme: IconThemeData(color: Colors.white),
         actions: [ 
-          IconButton(
+            IconButton(
             icon: const Icon(Icons.refresh), 
-            onPressed: () {},
+            onPressed: () {
+              _generateTitle(_selectedNote!);
+            },
           ),
         ],
       ),
@@ -196,13 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     hintText: 'Note',
                     hintStyle: TextStyle(color: Colors.grey),
                   ),
-                  onChanged: (text) {
-                    if (_selectedNote != null) {
-                      _selectedNote!.content = text;
-                      _selectedNote!.lastEdited = DateTime.now();
-                      _saveNotes(); // Save on every content change
-                    }
-                  },
+                  onChanged:(text) => _updateNote(text),
                 ),
               ),
             ],
